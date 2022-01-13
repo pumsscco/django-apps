@@ -78,15 +78,32 @@ WSGI_APPLICATION = 'plutochan.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pluto', 
-        'USER': 'plutochan', 
-        'PASSWORD': 'MZ#fDNfp^rK`@un&jZjC5', 
-        'HOST': '127.0.0.1', 
+        'NAME': 'django32', 
+        'USER': 'django32', 
+        'PASSWORD': 'trwZiqMERQnoNDCThox4', 
+        'HOST': 'mysql', 
         'PORT': '3306',
     }
 }
 
-
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/info.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -109,16 +126,16 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+#LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
+#TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
-
+#USE_TZ = True
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/

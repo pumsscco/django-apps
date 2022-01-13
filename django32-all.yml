@@ -1,0 +1,104 @@
+---
+#第一步，先创建django32专用pv
+#+里面放只放应用日志
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: django32-pv
+  labels:
+    app: django32
+spec:
+  capacity:
+    storage: 300Mi
+  accessModes:
+  - ReadWriteOnce
+  - ReadOnlyMany
+  #persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 192.168.30.218
+    path: /data/pv/cpluto/django32
+---
+#第二步，再创建专用pvc
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: django32-all
+  namespace: cpluto
+spec:
+  resources:
+    requests:
+      storage: 300Mi
+  selector:
+    matchLabels:
+      app: django32
+  accessModes:
+  - ReadWriteOnce
+---
+#第三步，创建普通应用的部署集
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django32
+  namespace: cpluto
+  labels:
+    app: django32
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: django32
+  template:
+    metadata:
+      labels:
+        app: django32
+    spec:
+      containers:
+      - name: django32
+        image: harbor.ceibsonline.cn:5000/cpluto/django32:1.7.5
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 150m
+            memory: 150Mi
+        livenessProbe:
+          tcpSocket:
+            port: 5571
+        readinessProbe:
+          tcpSocket:
+            port: 5571
+          initialDelaySeconds: 3
+          periodSeconds: 5
+        ports:
+        - containerPort: 5571
+        volumeMounts:
+        - mountPath: "/app/logs"
+          name: django32
+          subPathExpr: $(POD_NAME)
+      imagePullSecrets:
+      - name: ceibsonline
+      volumes:
+      - name: django32
+        persistentVolumeClaim:
+          claimName: django32-all
+---
+#第四步，创建服务
+apiVersion: v1
+kind: Service
+metadata:
+  name: django32
+  namespace: cpluto
+spec:
+  type: NodePort
+  ports:
+  - port: 5571
+    protocol: TCP
+    targetPort: 5571
+    nodePort: 30071
+  selector:
+    app: django32
