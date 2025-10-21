@@ -26,7 +26,7 @@ class Stock(models.Model):  #股票交易记录
 
 
     def __unicode__(self):
-        return "成交日期:%s;股票名称:%s;操作类型:%s;成交数量:%d" % (self.date,self.name,self.operation,self.volume)
+        return f"成交日期:{self.date};股票名称:{self.name};操作类型:{self.operation};成交数量:{self.volume}"
 
     class Meta:
         db_table='stock'

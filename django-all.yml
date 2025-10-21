@@ -1,12 +1,12 @@
 ---
-#第一步，先创建django32专用pv
+#第一步，先创建django专用pv
 #+里面放只放应用日志
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: django32-pv
+  name: django-pv
   labels:
-    app: django32
+    app: django
 spec:
   capacity:
     storage: 300Mi
@@ -16,13 +16,13 @@ spec:
   #persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 192.168.30.218
-    path: /data/pv/cpluto/django32
+    path: /data/pv/cpluto/django
 ---
 #第二步，再创建专用pvc
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: django32-all
+  name: django-all
   namespace: cpluto
 spec:
   resources:
@@ -30,7 +30,7 @@ spec:
       storage: 300Mi
   selector:
     matchLabels:
-      app: django32
+      app: django
   accessModes:
   - ReadWriteOnce
 ---
@@ -38,23 +38,23 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: django32
+  name: django
   namespace: cpluto
   labels:
-    app: django32
+    app: django
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: django32
+      app: django
   template:
     metadata:
       labels:
-        app: django32
+        app: django
     spec:
       containers:
-      - name: django32
-        image: harbor.ceibsonline.cn:5000/cpluto/django32:1.7.5
+      - name: django
+        image: harbor.ceibsonline.cn:5000/cpluto/django:1.7.5
         env:
         - name: POD_NAME
           valueFrom:
@@ -78,20 +78,20 @@ spec:
         - containerPort: 5571
         volumeMounts:
         - mountPath: "/app/logs"
-          name: django32
+          name: django
           subPathExpr: $(POD_NAME)
       imagePullSecrets:
       - name: ceibsonline
       volumes:
-      - name: django32
+      - name: django
         persistentVolumeClaim:
-          claimName: django32-all
+          claimName: django-all
 ---
 #第四步，创建服务
 apiVersion: v1
 kind: Service
 metadata:
-  name: django32
+  name: django
   namespace: cpluto
 spec:
   type: NodePort
@@ -101,4 +101,4 @@ spec:
     targetPort: 5571
     nodePort: 30071
   selector:
-    app: django32
+    app: django

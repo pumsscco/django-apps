@@ -12,3 +12,8 @@
 echo \
   "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
   focal stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+
+
+# 2025再更新
+同样是django版本更换，包括容器里的base镜像，依赖库等，仅为了研究python项目的安全修复

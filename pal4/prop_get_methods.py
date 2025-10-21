@@ -39,8 +39,7 @@ print '道具大类： ',pc_content
 """
 def buy_source(item_id):
     #先根据商品ID查询Good表得到店铺ID列表
-    g_sql="""select SHOP_ID from Good
-            where GOODS_ID='%d'""" % item_id
+    g_sql=f"select SHOP_ID from Good where GOODS_ID='{item_id}'" 
     curs.execute(g_sql)
     shops_result=curs.fetchall()
     shop_id_list=[]
@@ -51,23 +50,19 @@ def buy_source(item_id):
     for shop_id in shop_id_list:
         shop_info=[]
         #从ShopProperty表获取名称，位置编号，类型编号
-        sp_sql="""select NAME,POSITION,TYPE from ShopProperty
-             where ID='%s'""" % shop_id
+        sp_sql=f"select NAME,POSITION,TYPE from ShopProperty where ID='{shop_id}'"
         curs.execute(sp_sql)
         shop_name,shop_position,shop_type=curs.fetchone()
         #再从ShopType获取类型名称
-        st_sql="""select CONTENT from ShopType
-                where ID='%d'""" % shop_type
+        st_sql=f"select CONTENT from ShopType where ID='{shop_type}'"
         curs.execute(st_sql)
         shop_type_name=curs.fetchone()[0]
         #从Scene表获取对应场景的所有室外区块的编号与名称
-        s_sql="""select SECTION,NAME from Scene
-               where TYPE=0 and SCENE='%s'""" % shop_position
+        s_sql=f"select SECTION,NAME from Scene where TYPE=0 and SCENE='{shop_position}'"
         curs.execute(s_sql)
         outer_list =curs.fetchall()
         #再从Scene表中获取店铺名称对应的区块编号SECTION
-        s2_sql = """select SECTION from Scene
-                       where SCENE='%s' and NAME='%s'""" % (shop_position,shop_name)
+        s2_sql = f"select SECTION from Scene where SCENE='{shop_position}' and NAME='{shop_name}'"
         curs.execute(s2_sql)
         outer_list = curs.fetchall()
         for
@@ -89,8 +84,7 @@ def buy_source(item_id):
 后续换数组+字典模式
 """
 def drop_source(item_id):
-    m_sql="""select MONSTER_ID,MA_NAME,IS_BOSS from Monster
-            where MDT_1_ID='%d' or MDT_2_ID='%d' or MDT_3_ID='%d' or MDT_4_ID='%d'""" % item_id
+    m_sql=f"select MONSTER_ID,MA_NAME,IS_BOSS from Monster where MDT_1_ID='{item_id}' or MDT_2_ID='{item_id}' or MDT_3_ID='{item_id}' or MDT_4_ID='{item_id}'" 
     curs.execute(m_sql)
     m_result=curs.fetchall()
     m_info_list=[]
@@ -103,8 +97,7 @@ def drop_source(item_id):
 返回值：与物品掉落相同
 """
 def steal_source(item_id):
-    m_sql="""select MONSTER_ID,MA_NAME from Monster
-            where CA_LOSABLE_PROPERTY='%d'""" % item_id
+    m_sql=f"select MONSTER_ID,MA_NAME from Monster where CA_LOSABLE_PROPERTY='{item_id}'"
     curs.execute(m_sql)
     m_result=curs.fetchall()
     m_info_list=[]
